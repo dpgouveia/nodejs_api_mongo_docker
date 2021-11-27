@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const userAccountController = require('./UserAccount/userAccountController');
+const cors = require('cors');
 
 // mongodb connection settings
 const mongoDbHost = process.env.MONGODB_HOST;
@@ -12,10 +13,16 @@ const mongoDbUser = process.env.MONGODB_USER;
 const mongoDbPassword = encodeURIComponent(process.env.MONGODB_PASSWORD);
 const connectionString = `mongodb://${mongoDbUser}:${mongoDbPassword}@${mongoDbHost}:${mongoDbPort}/${mongoDbName}`;
 
-// configuring express to read json messages
+// configuring express to read json messages, controller and cors
 const api = express();
 api.use(express.urlencoded({extended: true}));
 api.use(express.json());
+api.use(cors({
+    origin: "*",
+    methods: ['POST', 'GET', 'PATCH', 'DELETE'],
+}));
+
+// Conecting routes into API
 api.use('/user-account', userAccountController);
 
 // start API
@@ -25,4 +32,3 @@ mongoose.connect(connectionString).then( () => {
 }).catch( (error) => {
     console.log(`Erro inesperado. Causa: ${error}`);
 });
-
