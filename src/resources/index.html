@@ -7,8 +7,35 @@
     <title>User Account System</title>
 </head>
 <body>
+ 
+    <hr>
+    <div>
+        <textarea name="txtareaUpdateInfo" id="txtareaUpdateInfo" cols="100" rows="4" readonly disabled style="resize: none">
+Preencher os campos abaixo para criar ou atualizar um usuário.
+Campo "Name" é obrigatório para criação e atualização de usuários.
+Para inserir novos usuarios deixar o campo ID vazio.
+        </textarea>
+        <br>
+        <label>ID</label>        <input type="text" name="inputId" id="inputId" style="width: 100" >
+        <button type="submit" name="buttonBuscarUsuario" id="buttonBuscarUsuario" >Buscar Usuario</button>          <br>
+        <label>Name</label>      <input type="text" name="inputName" id="inputName" required>                       <br>
+        <label>Email</label>     <input type="text" name="inputEmail" id="inputEmail">                              <br>
+        <label>Interests</label> <input type="text" name="inputInterests" id="inputInterests">
+        <button type="submit" name="buttonSaveUsuario" id="buttonSaveUsuario">Salvar Usuario</button>      
+        <button type="submit" name="buttonLimparFormulario" id="buttonLimparFormulario">Limpar Formulario</button>  <br>
+    </div>
+    <br>
+    <hr>
     
-    
+
+    <div>
+        <label>Resultado: </label>
+        <br>
+        <textarea name="txtareaOutputLog" id="txtareaOutputLog" cols="100" rows="4" readonly disabled style="resize: none"></textarea>
+    </div>
+    <br>
+    <hr>
+    <script src="../index.js"> </script>
 
 </body>
 </html>
