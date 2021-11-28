@@ -61,7 +61,7 @@ userAccountController.get('/read/', async (request, response) => {
             return;
         }
 
-        response.status(200).json({users});
+        response.status(200).json(users);
     } catch (error) {
         response.status(500).json({error: error});
     }
@@ -83,7 +83,7 @@ userAccountController.get('/read/:id', async (request, response) => {
         if(user == null || user == undefined) {
             throw {status: 404, message: "Usuario com ID nao encontrado na base de dados!" };
         }
-        response.status(200).json({user});
+        response.status(200).json(user);
     } catch (error) {
         response.status(error.status).json({error: error.message});
     }

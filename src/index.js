@@ -1,5 +1,55 @@
 console.log(`Logging output...`);
 
+async function buscarUsuario(userId) {
+    console.log(`Iniciando buscarUsuario()....`);
+    
+    // Obtendo componente de output
+    const outputLog = document.querySelector('#txtareaOutputLog');
+
+    // Obtendo campos da tela
+    const inputId = document.querySelector('#inputId');
+    const inputName = document.querySelector('#inputName');
+    const inputEmail = document.querySelector('#inputEmail');
+    const inputInterests = document.querySelector('#inputInterests');
+
+    // Enviando requisicao para busca do usuario
+    const response = await fetch(`http://localhost:3000/user-account/read/${userId}`, {
+        method: 'GET',
+    });
+    if (response.ok) {
+        const user = await response.json();
+        console.log(user);
+
+        inputId.value = user._id;
+        inputName.value = user.name;
+        inputEmail.value = user.email;
+        inputInterests.value = user.interests;
+
+        outputLog.innerText = `Usuário com ID encontrado na base de dados. Informações do usuário carregadas na tela!`;
+
+    } else {
+
+        inputName.value = '';
+        inputEmail.value = '';
+        inputInterests.value = '';
+
+        switch (response.status) {
+            case 400:
+                outputLog.innerText = `ID Inválido`;
+                break;
+
+            case 404:
+                outputLog.innerText = `Usuário com ID ${userId} não foi encontrado na base`;
+                break;
+
+            default:
+                outputLog.innerText = `Erro inesperado durante a busca do usuário. Status: ${response.status}. Causa: ${response.statusText}`;
+                break;
+        }
+    }
+}
+
+
 document.querySelector('#buttonLimparFormulario').onclick = function() {
     console.log(`Button clicked: #buttonLimparFormulario `);
 
@@ -15,7 +65,8 @@ document.querySelector('#buttonLimparFormulario').onclick = function() {
     inputName.value = '';
     inputEmail.value = '';
     inputInterests.value = '';
-    txtareaOutputLog.innerText = '';  
+    txtareaOutputLog.innerText = '';
+
 }
 
 
@@ -43,13 +94,13 @@ document.querySelector('#buttonBuscarUsuario').onclick = async function () {
                                       method: 'GET', 
                                     });
         if(response.ok) {
-            const obj = await response.json();
-            ///console.log(obj);
+            const user = await response.json();
+            console.log(user);
 
-            inputId.value        = obj.user._id;
-            inputName.value      = obj.user.name;
-            inputEmail.value     = obj.user.email;
-            inputInterests.value = obj.user.interests;
+            inputId.value        = user._id;
+            inputName.value      = user.name;
+            inputEmail.value     = user.email;
+            inputInterests.value = user.interests;
 
             outputLog.innerText = `Usuário com ID encontrado na base de dados. Informações do usuário carregadas na tela!`;
 
@@ -74,7 +125,9 @@ document.querySelector('#buttonBuscarUsuario').onclick = async function () {
             }   
         }
     }
+
 }
+
 
 document.querySelector('#buttonRemoverUsuario').onclick = async function() {
     console.log(`Button clicked: #buttonRemoverUsuario `);
@@ -102,8 +155,6 @@ document.querySelector('#buttonRemoverUsuario').onclick = async function() {
 
         // Validando resposta da requisicao
         if(response.ok) {
-            const obj = await response.json();
-            ///console.log(obj);
 
             outputLog.innerText = `Usuário com ID ${userId} removido na base de dados com sucesso!`;
 
@@ -133,7 +184,9 @@ document.querySelector('#buttonRemoverUsuario').onclick = async function() {
             }   
         }
     }
+
 }
+
 
 document.querySelector('#buttonSalvarUsuario').onclick = async function() {
     console.log(`Button clicked: #buttonSalvarUsuario`);
@@ -191,4 +244,59 @@ document.querySelector('#buttonSalvarUsuario').onclick = async function() {
                 break;
         }
     }
+
 }
+
+async function listarUsuarios() {
+
+    const table = document.querySelector('#tableUserData');
+
+    // Gerando tabela dinamica com os usuários cadastros no sistema
+    const rowHeader = document.createElement('tr');
+    const idHeader = document.createElement('th');
+    const nameHeader = document.createElement('th');
+    const emailHeader = document.createElement('th');
+    const interestsHeader = document.createElement('th');
+    idHeader.innerText = 'ID'
+    nameHeader.innerText = 'Name'
+    emailHeader.innerText = 'Email'
+    interestsHeader.innerText = 'Interests'
+    rowHeader.append(idHeader);
+    rowHeader.append(nameHeader);
+    rowHeader.append(emailHeader);
+    rowHeader.append(interestsHeader);
+    table.append(rowHeader);
+
+    // Requisitando a lista de usuarios cadastrados na solucao
+    const users = await (await fetch(`http://localhost:3000/user-account/read/`, { method: 'GET', })).json();
+    ///console.log(users);
+
+    // Preenchendo linhas na tabela de acordo como cada usuario da lista
+    let row;
+    let idData, nameData, emailData, interestsData;
+    users.forEach(user => {
+        //console.log(element);
+        row           = document.createElement('tr');
+        idData        = document.createElement('td');
+        nameData      = document.createElement('td');
+        emailData     = document.createElement('td');
+        interestsData = document.createElement('td');
+        nameButton    = document.createElement('button');
+
+        idData.innerText        = user._id;
+        emailData.innerText     = user.email;
+        interestsData.innerText = user.interests;
+
+        nameButton.innerText = user.name;
+        nameButton.onclick = () => { buscarUsuario(user._id); };
+        nameData.append(nameButton);
+        
+        row.append(idData);
+        row.append(nameButton);
+        row.append(emailData);
+        row.append(interestsData);
+        table.append(row);
+    });
+}
+
+listarUsuarios();

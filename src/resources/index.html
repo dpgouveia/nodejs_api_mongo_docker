@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png"  href="#">
     <title>User Account System</title>
 </head>
 <body>
  
     <!-- Main Div -->
     <hr>
+    <h1>Formulário de Cadastro</h1>
     <div>
         <textarea name="txtareaUpdateInfo" id="txtareaUpdateInfo" cols="100" rows="4" readonly disabled style="resize: none">
 Preencher os campos abaixo para criar ou atualizar um usuário.
@@ -27,14 +29,25 @@ Para remover um usuário, informar o ID do mesmo no campo "name".
         <button type="submit" name="buttonSalvarUsuario" id="buttonSalvarUsuario">Salvar Usuario</button>      
         <button type="submit" name="buttonLimparFormulario" id="buttonLimparFormulario">Limpar Formulario</button>  <br>
     </div>
-    <br>
     <hr>
     
     <!-- Output Logging -->
     <div>
-        <label>Resultado: </label>
-        <br>
+        <h1>Resultado: </h1>
         <textarea name="txtareaOutputLog" id="txtareaOutputLog" cols="100" rows="4" readonly disabled style="resize: none"></textarea>
+    </div>
+    <br>
+    <hr>
+
+    <!-- List of users division -->
+    <div>
+        <h1>Lista de Usuarios</h1>
+        <br>
+
+        <!-- Tabela de usuários gerada dinamicamente via javascript -->
+        <table id="tableUserData" border="1px solid black">
+        </table>
+
     </div>
     <br>
     <hr>
