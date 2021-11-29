@@ -1,5 +1,10 @@
 console.log(`Logging output...`);
 
+// Function definition
+
+/* buscarUsuario(userId): Trazer os dados do usuário selecionado na lista de usuários
+ *                 Input: userId - MongoDB ID do usuário
+ */
 async function buscarUsuario(userId) {
     console.log(`Iniciando buscarUsuario()....`);
     
@@ -49,7 +54,65 @@ async function buscarUsuario(userId) {
     }
 }
 
+/* 
+ * ListarUsuario(): Imprimr lista de funcionarios na pagina principal da aplicacao
+ */
+async function listarUsuarios() {
 
+    const table = document.querySelector('#tableUserData');
+    table.innerText = '';
+ 
+    // Gerando tabela dinamica com os usuários cadastros no sistema
+    const rowHeader = document.createElement('tr');
+    const idHeader = document.createElement('th');
+    const nameHeader = document.createElement('th');
+    const emailHeader = document.createElement('th');
+    const interestsHeader = document.createElement('th');
+    idHeader.innerText = 'ID'
+    nameHeader.innerText = 'Name'
+    emailHeader.innerText = 'Email'
+    interestsHeader.innerText = 'Interests'
+    rowHeader.append(idHeader);
+    rowHeader.append(nameHeader);
+    rowHeader.append(emailHeader);
+    rowHeader.append(interestsHeader);
+    table.append(rowHeader);
+
+    // Requisitando a lista de usuarios cadastrados na solucao
+    const users = await (await fetch(`http://localhost:3000/user-account/read/`, { method: 'GET', })).json();
+    ///console.log(users);
+
+    // Preenchendo linhas na tabela de acordo como cada usuario da lista
+    let row;
+    let idData, nameData, emailData, interestsData;
+    users.forEach(user => {
+        //console.log(element);
+        row           = document.createElement('tr');
+        idData        = document.createElement('td');
+        nameData      = document.createElement('td');
+        emailData     = document.createElement('td');
+        interestsData = document.createElement('td');
+        nameButton    = document.createElement('button');
+
+        idData.innerText        = user._id;
+        emailData.innerText     = user.email;
+        interestsData.innerText = user.interests;
+
+        nameButton.innerText = user.name;
+        nameButton.onclick = () => { buscarUsuario(user._id); };
+        nameData.append(nameButton);
+        
+        row.append(idData);
+        row.append(nameButton);
+        row.append(emailData);
+        row.append(interestsData);
+        table.append(row);
+    });
+}
+
+/* 
+ * LimparFormulario(): Limpa todos os campos da tela da aplicacao
+ */
 document.querySelector('#buttonLimparFormulario').onclick = function() {
     console.log(`Button clicked: #buttonLimparFormulario `);
 
@@ -70,6 +133,10 @@ document.querySelector('#buttonLimparFormulario').onclick = function() {
 }
 
 
+/* 
+ * BuscarUsuario(): Busca as informações do usuário dado um ID informado no campo ID.
+ *             OBS: Função poderá ser descontinuada devido a funcionalidade de selecionar o usuário a partir da lista
+ */
 document.querySelector('#buttonBuscarUsuario').onclick = async function () {
     console.log(`Button clicked: #buttonBuscarUsuario `);
     
@@ -125,10 +192,12 @@ document.querySelector('#buttonBuscarUsuario').onclick = async function () {
             }   
         }
     }
-
 }
 
-
+/* 
+ * RemoverUsuario(): Remove o usuário da base dado o ID informado no campo ID
+ *              OBS: Função poderá ser descontinuada devido a funcionalidade de selecionar o usuário a partir da lista
+ */
 document.querySelector('#buttonRemoverUsuario').onclick = async function() {
     console.log(`Button clicked: #buttonRemoverUsuario `);
 
@@ -185,9 +254,14 @@ document.querySelector('#buttonRemoverUsuario').onclick = async function() {
         }
     }
 
+    // Atualizando lista de usuários no final da operação
+    listarUsuarios();
 }
 
 
+/* 
+ * SalvarUsuário(): Cria um usuário ou atualiza um existente, caso seja informado um ID válido.
+ */
 document.querySelector('#buttonSalvarUsuario').onclick = async function() {
     console.log(`Button clicked: #buttonSalvarUsuario`);
 
@@ -211,11 +285,11 @@ document.querySelector('#buttonSalvarUsuario').onclick = async function() {
         requisicao.url = `http://localhost:3000/user-account/update/${userId}`;
         requisicao.method = 'PATCH';
     }
-    console.log(requisicao);
+    //console.log(requisicao);
 
     // Criando um objeto json a partir dos dados na tela
     const user = JSON.stringify({ name: inputName.value, email: inputEmail.value, interests: inputInterests.value });
-    console.log(user);
+    //console.log(user);
 
     // Enviando requisicao para criacao/atualizacao do usuario
     const response = await fetch(requisicao.url, {
@@ -245,58 +319,17 @@ document.querySelector('#buttonSalvarUsuario').onclick = async function() {
         }
     }
 
+    // Se foi criado um novo usuário, limpar os campos para evitar "falsa atualização" de registro recem criado
+    if(userId == null || userId == undefined || userId == "" ) {
+        inputId.value        = '';
+        inputName.value      = '';
+        inputEmail.value     = '';
+        inputInterests.value = '';
+    }
+
+    // Atualizar lista de usuário no final da operação
+    listarUsuarios();
 }
 
-async function listarUsuarios() {
-
-    const table = document.querySelector('#tableUserData');
-
-    // Gerando tabela dinamica com os usuários cadastros no sistema
-    const rowHeader = document.createElement('tr');
-    const idHeader = document.createElement('th');
-    const nameHeader = document.createElement('th');
-    const emailHeader = document.createElement('th');
-    const interestsHeader = document.createElement('th');
-    idHeader.innerText = 'ID'
-    nameHeader.innerText = 'Name'
-    emailHeader.innerText = 'Email'
-    interestsHeader.innerText = 'Interests'
-    rowHeader.append(idHeader);
-    rowHeader.append(nameHeader);
-    rowHeader.append(emailHeader);
-    rowHeader.append(interestsHeader);
-    table.append(rowHeader);
-
-    // Requisitando a lista de usuarios cadastrados na solucao
-    const users = await (await fetch(`http://localhost:3000/user-account/read/`, { method: 'GET', })).json();
-    ///console.log(users);
-
-    // Preenchendo linhas na tabela de acordo como cada usuario da lista
-    let row;
-    let idData, nameData, emailData, interestsData;
-    users.forEach(user => {
-        //console.log(element);
-        row           = document.createElement('tr');
-        idData        = document.createElement('td');
-        nameData      = document.createElement('td');
-        emailData     = document.createElement('td');
-        interestsData = document.createElement('td');
-        nameButton    = document.createElement('button');
-
-        idData.innerText        = user._id;
-        emailData.innerText     = user.email;
-        interestsData.innerText = user.interests;
-
-        nameButton.innerText = user.name;
-        nameButton.onclick = () => { buscarUsuario(user._id); };
-        nameData.append(nameButton);
-        
-        row.append(idData);
-        row.append(nameButton);
-        row.append(emailData);
-        row.append(interestsData);
-        table.append(row);
-    });
-}
-
-listarUsuarios();
+// Main function
+listarUsuarios(); // Ao carregar a aplicação na primeira vez, trazer a lista de usuários cadastrados na base
