@@ -4,50 +4,60 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png"  href="#">
     <title>User Account System</title>
 </head>
 <body>
+
+    <!-- Output Logging -->
+    <div>
+        <textarea cols="4" rows="1" readonly disabled style="resize: none">Log:</textarea>
+        <textarea name="txtareaOutputLog" id="txtareaOutputLog" cols="150" rows="1" readonly disabled style="resize: none"></textarea>
+    </div>
  
     <!-- Main Div -->
     <hr>
-    <h1>Formulário de Cadastro</h1>
+    <h1>Formulário de Cadastro:</h1>
     <div>
-        <textarea name="txtareaUpdateInfo" id="txtareaUpdateInfo" cols="100" rows="4" readonly disabled style="resize: none">
-Preencher os campos abaixo para criar ou atualizar um usuário.
-Campo "Name" é obrigatório para criação e atualização de usuários.
-Para inserir novos usuarios, preencher os demais campos deixando o campo ID vazio.
-Para remover um usuário, informar o ID do mesmo no campo "name".
-        </textarea>
+        <textarea name="txtareaUpdateInfo" id="txtareaUpdateInfo" cols="170" rows="7" readonly disabled style="resize: none">
+Bem vindo a ferramenta de cadastro de usuários!
+Para criar um novo usuário basta digitar os dados do usuário e clicar no botão "Salvar Usuário". A ferramenta não permite de cadastro de usuário sem nome. Somente o campo "Name" é de preenchimento obrigatório.
+Para atualizar um usuário, basta clicar no botão contendo o nome do mesmo na lista de usuários apresentada no final da página, editar os campos desejados e clicar no botão "Salvar Usuário".
+Para remover um usuário basta clicar no botão "-" apresentado na coluna "Remover Registro?" na lista de usuários apresentada no final da página
+Para limpar todos os campos preenchidos clique no botão "Limpar Formulário".
+</textarea>
         <br>
-        <label>ID</label>        <input type="text" name="inputId" id="inputId" style="width: 100" >
-        <button type="submit" name="buttonBuscarUsuario" id="buttonBuscarUsuario">Buscar Usuario</button>          
-        <button type="submit" name="buttonRemoverUsuario" id="buttonRemoverUsuario">Remover Usuario</button>        <br>
-        <label>Name</label>      <input type="text" name="inputName" id="inputName" required>                       <br>
-        <label>Email</label>     <input type="text" name="inputEmail" id="inputEmail">                              <br>
-        <label>Interests</label> <input type="text" name="inputInterests" id="inputInterests">
+        <label></label>          <input type="text" name="inputId"    id="inputId"   hidden>
+
+        <table>
+            <tr>
+                <td> <label>Name</label>                                           </td> 
+                <td> <input type="text" name="inputName"  id="inputName" required> </td>
+                <td> </td> 
+            </tr>
+            <tr>
+                <td> <label>Email</label>                                           </td> 
+                <td> <input type="text" name="inputEmail" id="inputEmail">          </td>
+                <td> </td> 
+            </tr>
+            <tr>
+                <td> <label>Interests</label>                                      </td> 
+                <td> <input type="text" name="inputInterests" id="inputInterests"> </td>
+                <td> </td> 
+            </tr>
+        </table>
         <button type="submit" name="buttonSalvarUsuario" id="buttonSalvarUsuario">Salvar Usuario</button>      
         <button type="submit" name="buttonLimparFormulario" id="buttonLimparFormulario">Limpar Formulario</button>  <br>
+        <br>
     </div>
-    <hr>
-    
-    <!-- Output Logging -->
-    <div>
-        <h1>Resultado: </h1>
-        <textarea name="txtareaOutputLog" id="txtareaOutputLog" cols="100" rows="4" readonly disabled style="resize: none"></textarea>
-    </div>
-    <br>
     <hr>
 
     <!-- List of users division -->
     <div>
-        <h1>Lista de Usuarios</h1>
-        <br>
+        <h1>Lista de Usuários:</h1>
 
         <!-- Tabela de usuários gerada dinamicamente via javascript -->
         <table id="tableUserData" border="1px solid black">
         </table>
-
     </div>
     <br>
     <hr>

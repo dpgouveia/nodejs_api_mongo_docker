@@ -54,6 +54,63 @@ async function buscarUsuario(userId) {
     }
 }
 
+/*
+ * removerUsuario(userId): Remove o usuário da base dado o ID informado no campo ID
+ */
+async function removerUsuario(userId) {
+
+    // Obtendo componente de output
+    const outputLog = document.querySelector('#txtareaOutputLog');
+
+    // Obtendo campos da tela
+    const inputId = document.querySelector('#inputId');
+    const inputName = document.querySelector('#inputName');
+    const inputEmail = document.querySelector('#inputEmail');
+    const inputInterests = document.querySelector('#inputInterests');
+
+    // Obtendo ID
+    if(userId == "" || userId == null || userId == undefined) {
+        outputLog.innerText = 'ID inválido ou vazio (não foi preenchido)'
+    } else {
+
+        // Enviando requisicao para remnocao do usuario
+        const response = await fetch(`http://localhost:3000/user-account/delete/${userId}`, {
+                                      method: 'DELETE',                     
+        });
+
+        // Validando resposta da requisicao
+        if(response.ok) {
+
+            outputLog.innerText = `Usuário com ID ${userId} removido na base de dados com sucesso!`;
+        
+        } else {
+
+            switch (response.status) {
+                case 400:
+                    outputLog.innerText = `ID Inválido`;
+                    break;
+
+                case 404:
+                    outputLog.innerText = `Usuário com ID ${userId} não foi encontrado na base`;
+                    break;
+            
+                default:
+                    outputLog.innerText = `Erro inesperado durante a remoção do usuário na base. Status: ${response.status}. Causa: ${response.statusText}`;
+                    break;
+            }   
+        }
+    }
+
+    // Limpando os campos (precaução)
+    inputId.value        = '';
+    inputName.value      = '';
+    inputEmail.value     = '';
+    inputInterests.value = '';
+
+    // Atualizando lista de usuários no final da operação
+    listarUsuarios();
+}
+
 /* 
  * ListarUsuario(): Imprimr lista de funcionarios na pagina principal da aplicacao
  */
@@ -64,15 +121,15 @@ async function listarUsuarios() {
  
     // Gerando tabela dinamica com os usuários cadastros no sistema
     const rowHeader = document.createElement('tr');
-    const idHeader = document.createElement('th');
+    const deleteHeader = document.createElement('th');
     const nameHeader = document.createElement('th');
     const emailHeader = document.createElement('th');
     const interestsHeader = document.createElement('th');
-    idHeader.innerText = 'ID'
+    deleteHeader.innerText = 'Remover Registro?'
     nameHeader.innerText = 'Name'
     emailHeader.innerText = 'Email'
     interestsHeader.innerText = 'Interests'
-    rowHeader.append(idHeader);
+    rowHeader.append(deleteHeader);
     rowHeader.append(nameHeader);
     rowHeader.append(emailHeader);
     rowHeader.append(interestsHeader);
@@ -84,26 +141,32 @@ async function listarUsuarios() {
 
     // Preenchendo linhas na tabela de acordo como cada usuario da lista
     let row;
-    let idData, nameData, emailData, interestsData;
+    let deleteData, nameData, emailData, interestsData, nameButton, deleteButton;
     users.forEach(user => {
         //console.log(element);
         row           = document.createElement('tr');
-        idData        = document.createElement('td');
+        deleteData    = document.createElement('td');
         nameData      = document.createElement('td');
         emailData     = document.createElement('td');
         interestsData = document.createElement('td');
         nameButton    = document.createElement('button');
+        deleteButton  = document.createElement('button');
 
-        idData.innerText        = user._id;
-        emailData.innerText     = user.email;
-        interestsData.innerText = user.interests;
+        deleteButton.innerText = '-'
+        deleteButton.onclick = () => { removerUsuario(user._id) };
+        deleteData.align = 'center'; // TODO: deprecated property -> futuramente deve ser feito via CSS
+        deleteData.append(deleteButton);
 
         nameButton.innerText = user.name;
         nameButton.onclick = () => { buscarUsuario(user._id); };
+        nameData.align = 'center'; // TODO: deprecated property -> futuramente deve ser feito via CSS
         nameData.append(nameButton);
-        
-        row.append(idData);
-        row.append(nameButton);
+
+        emailData.innerText     = user.email;
+        interestsData.innerText = user.interests;
+
+        row.append(deleteData);
+        row.append(nameData);
         row.append(emailData);
         row.append(interestsData);
         table.append(row);
@@ -130,132 +193,6 @@ document.querySelector('#buttonLimparFormulario').onclick = function() {
     inputInterests.value = '';
     txtareaOutputLog.innerText = '';
 
-}
-
-
-/* 
- * BuscarUsuario(): Busca as informações do usuário dado um ID informado no campo ID.
- *             OBS: Função poderá ser descontinuada devido a funcionalidade de selecionar o usuário a partir da lista
- */
-document.querySelector('#buttonBuscarUsuario').onclick = async function () {
-    console.log(`Button clicked: #buttonBuscarUsuario `);
-    
-    // Obtendo componente de output
-    const outputLog = document.querySelector('#txtareaOutputLog');
-
-    // Obtendo campos da tela
-    const inputId = document.querySelector('#inputId');
-    const inputName = document.querySelector('#inputName');
-    const inputEmail = document.querySelector('#inputEmail');
-    const inputInterests = document.querySelector('#inputInterests');
-
-    // Obtendo ID
-    const userId = document.querySelector('#inputId').value;
-    //console.log(userId);
-    if(userId == "" || userId == null || userId == undefined) {
-        outputLog.innerText = 'ID inválido ou vazio (não foi preenchido)'
-    } else {
-
-        // Enviando requisicao para busca do usuario
-        const response = await fetch(`http://localhost:3000/user-account/read/${userId}`, {
-                                      method: 'GET', 
-                                    });
-        if(response.ok) {
-            const user = await response.json();
-            console.log(user);
-
-            inputId.value        = user._id;
-            inputName.value      = user.name;
-            inputEmail.value     = user.email;
-            inputInterests.value = user.interests;
-
-            outputLog.innerText = `Usuário com ID encontrado na base de dados. Informações do usuário carregadas na tela!`;
-
-        } else {
-
-            inputName.value      = '';
-            inputEmail.value     = '';
-            inputInterests.value = ''; 
-
-            switch (response.status) {
-                case 400:
-                    outputLog.innerText = `ID Inválido`;
-                    break;
-
-                case 404:
-                    outputLog.innerText = `Usuário com ID ${userId} não foi encontrado na base`;
-                    break;
-            
-                default:
-                    outputLog.innerText = `Erro inesperado durante a busca do usuário. Status: ${response.status}. Causa: ${response.statusText}`;
-                    break;
-            }   
-        }
-    }
-}
-
-/* 
- * RemoverUsuario(): Remove o usuário da base dado o ID informado no campo ID
- *              OBS: Função poderá ser descontinuada devido a funcionalidade de selecionar o usuário a partir da lista
- */
-document.querySelector('#buttonRemoverUsuario').onclick = async function() {
-    console.log(`Button clicked: #buttonRemoverUsuario `);
-
-    // Obtendo componente de output
-    const outputLog = document.querySelector('#txtareaOutputLog');
-
-    // Obtendo campos da tela
-    const inputId = document.querySelector('#inputId');
-    const inputName = document.querySelector('#inputName');
-    const inputEmail = document.querySelector('#inputEmail');
-    const inputInterests = document.querySelector('#inputInterests');
-
-    // Obtendo ID
-    const userId = inputId.value;
-    //console.log(userId);
-    if(userId == "" || userId == null || userId == undefined) {
-        outputLog.innerText = 'ID inválido ou vazio (não foi preenchido)'
-    } else {
-
-        // Enviando requisicao para remnocao do usuario
-        const response = await fetch(`http://localhost:3000/user-account/delete/${userId}`, {
-                                      method: 'DELETE',                     
-        });
-
-        // Validando resposta da requisicao
-        if(response.ok) {
-
-            outputLog.innerText = `Usuário com ID ${userId} removido na base de dados com sucesso!`;
-
-            inputId.value        = '';
-            inputName.value      = '';
-            inputEmail.value     = '';
-            inputInterests.value = '';
-
-        } else {
-
-            inputName.value      = '';
-            inputEmail.value     = '';
-            inputInterests.value = ''; 
-
-            switch (response.status) {
-                case 400:
-                    outputLog.innerText = `ID Inválido`;
-                    break;
-
-                case 404:
-                    outputLog.innerText = `Usuário com ID ${userId} não foi encontrado na base`;
-                    break;
-            
-                default:
-                    outputLog.innerText = `Erro inesperado durante a remoção do usuário na base. Status: ${response.status}. Causa: ${response.statusText}`;
-                    break;
-            }   
-        }
-    }
-
-    // Atualizando lista de usuários no final da operação
-    listarUsuarios();
 }
 
 
