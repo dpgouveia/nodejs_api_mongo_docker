@@ -116,6 +116,7 @@ async function removerUsuario(userId) {
  */
 async function listarUsuarios() {
 
+    const outputLog = document.querySelector('#txtareaOutputLog');
     const table = document.querySelector('#tableUserData');
     table.innerText = '';
  
@@ -136,41 +137,47 @@ async function listarUsuarios() {
     table.append(rowHeader);
 
     // Requisitando a lista de usuarios cadastrados na solucao
-    const users = await (await fetch(`http://localhost:3000/user-account/read/`, { method: 'GET', })).json();
-    ///console.log(users);
+    try {
+        
+        const users = await (await fetch(`http://localhost:3000/user-account/read/`, { method: 'GET', })).json();
+        console.log(users);
 
-    // Preenchendo linhas na tabela de acordo como cada usuario da lista
-    let row;
-    let deleteData, nameData, emailData, interestsData, nameButton, deleteButton;
-    users.forEach(user => {
-        //console.log(element);
-        row           = document.createElement('tr');
-        deleteData    = document.createElement('td');
-        nameData      = document.createElement('td');
-        emailData     = document.createElement('td');
-        interestsData = document.createElement('td');
-        nameButton    = document.createElement('button');
-        deleteButton  = document.createElement('button');
+        // Preenchendo linhas na tabela de acordo como cada usuario da lista
+        let row;
+        let deleteData, nameData, emailData, interestsData, nameButton, deleteButton;
+        users.forEach(user => {
+            //console.log(element);
+            row           = document.createElement('tr');
+            deleteData    = document.createElement('td');
+            nameData      = document.createElement('td');
+            emailData     = document.createElement('td');
+            interestsData = document.createElement('td');
+            nameButton    = document.createElement('button');
+            deleteButton  = document.createElement('button');
 
-        deleteButton.innerText = '-'
-        deleteButton.onclick = () => { removerUsuario(user._id) };
-        deleteData.align = 'center'; // TODO: deprecated property -> futuramente deve ser feito via CSS
-        deleteData.append(deleteButton);
+            deleteButton.innerText = '-'
+            deleteButton.onclick = () => { removerUsuario(user._id) };
+            deleteData.align = 'center'; // TODO: deprecated property -> futuramente deve ser feito via CSS
+            deleteData.append(deleteButton);
 
-        nameButton.innerText = user.name;
-        nameButton.onclick = () => { buscarUsuario(user._id); };
-        nameData.align = 'center'; // TODO: deprecated property -> futuramente deve ser feito via CSS
-        nameData.append(nameButton);
+            nameButton.innerText = user.name;
+            nameButton.onclick = () => { buscarUsuario(user._id); };
+            nameData.align = 'center'; // TODO: deprecated property -> futuramente deve ser feito via CSS
+            nameData.append(nameButton);
 
-        emailData.innerText     = user.email;
-        interestsData.innerText = user.interests;
+            emailData.innerText     = user.email;
+            interestsData.innerText = user.interests;
 
-        row.append(deleteData);
-        row.append(nameData);
-        row.append(emailData);
-        row.append(interestsData);
-        table.append(row);
-    });
+            row.append(deleteData);
+            row.append(nameData);
+            row.append(emailData);
+            row.append(interestsData);
+            table.append(row);
+        });
+
+    } catch(error) {
+        outputLog.innerText = `Erro durante a busca da lista de usuários cadastrados. Causa: ${error}`;
+    }
 }
 
 /* 
